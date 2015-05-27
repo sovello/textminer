@@ -110,7 +110,7 @@ def test_date(input, expected):
     ("02/30/2015", None),
 ])
 def test_hard_date(input, expected):
-    assert s.date(input) == expected
+    assert s.hdate(input) == expected
 
 
 @xfail
