@@ -5,25 +5,26 @@ def words(text):
     match = re.findall(r'\d*\-?[a-zA-Z\-]+', text, re.IGNORECASE)
     return match if len(match) > 0 else None
 
-def phone_numbers(text):
-    match = re.findall(r'\(?(\d{3})\)?\-*\s*\.*(\d{3})\-*\.*\s*(\d{4})', text)
-    if len(match) < 3:
+def phone_number(text):
+    match = re.findall(r'(\d{3})\D*(\d{3})\D*(\d{4})', text)
+    if not match:
         return None
     else:
         code = match[0]
-        number = "{}-{}".format(match[1], match[2])
-        dic = {"area_code":code, "number":number}
+        number = "{}-{}".format(code[1], code[2])
+        dic = {"area_code":code[0], "number":number}
         return dic
-        #string = 'area_code":"{}", "number":"{}-{}"'.format(*match.groups())
-        #return string
 
-#print(phone_numbers('555-1212'))
+#print(phone_number('919 555-1212'))
 
 def money(text):
-    match = re.search(r'^(${1})(\d+,\d+{3}\.?\d*)', text)
-    cur = match[0]
-    amount = match[1]
+    #'\$\d+(,[\d]{3})*(\.[\d]{2})?$'
+    match = re.findall(r'(\$\d+)((?:,)?[\d]{3})*\.([\d]{2})?', text)
+    print(match)
+    #cur = match[0]
+    #amount = match[1]
 
+money("$45,555,555.55")
 # helper
 def round(number):
     return math.round(float(number), 2)
@@ -77,8 +78,31 @@ def email(text):
     else:
         match = match[0]
         return {"local":match[0], "domain":match[1]}
-        #return match
 
 def address(text):
-    match = re.search(r'', text)
-        #print(email('viio_lakuku6@gmail.com'))
+    if not re.search(r'^\d', text):
+        return None
+    else:
+        addresse = r'(^\d{3,}\s+\w+(?:\s+\w+))(?:[,?\n?])'
+        state = r'(\b[A-Z]{2}\b)'
+        zcode = r'(\d{5}\-?\d{0,4})'
+        city1 = r'(?:\n?|,?)\s*(\w+\s*)(\w+\s*)(?:, \b[A-Z]{2}\b)'
+        city2 = r'(?:\n?|,?)\s*(\w+\s*\w+\s*)(?:, \b[A-Z]{2}\b)'
+        city = r'(?:\n+|,+){1}\s*([\w+\.?_?\d?\-?\s*]+)(?:, \b[A-Z]{2}\b)'
+        
+        city = re.search(city, text).groups()
+        addresse = re.search(addresse, text).groups()
+        state = re.search(state, text).groups()
+        zcode = re.search(zcode, text).groups()
+        code= zipcode(zcode[0])
+ #       print(code)
+        return {"address":addresse[0], "city":city[0], "state":state[0], "zip":code['zip'], "plus4":code['plus4']}
+        #return re.search(zcode,text)
+
+txt = ("""368 Agness Harbor
+     Port Mariah_scholes123, MS 63293""")
+t = "8264 Schamberger Spring, matem.bwe njom-be Jordanside, MT 98833-0997"
+z="Lake Joellville, NH"
+#sth = address(t)
+#print(sth)
+

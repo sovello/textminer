@@ -45,8 +45,6 @@ def test_word():
     assert not v.word("12")
     assert not v.word("!!!")
     assert not v.word("bar*us")
-
-
 @xfail
 def test_words():
     """words can take an optional count argument. In case it exists, the text
