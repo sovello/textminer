@@ -141,8 +141,8 @@ def test_hard_date():
     assert v.date("2014 Jan 01")
     assert v.date("2014 January 01")
     assert v.date("Jan. 1, 2015")
-    assert not v.date("07/40/2015")
-    assert not v.date("02/30/2015")
+    assert not v.hdate("07/40/2015")
+    assert not v.hdate("02/30/2015")
 
 
 @xfail

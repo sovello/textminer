@@ -15,20 +15,22 @@ def phone_number(text):
         dic = {"area_code":code[0], "number":number}
         return dic
 
-#print(phone_number('919 555-1212'))
 
 def money(text):
-    #'\$\d+(,[\d]{3})*(\.[\d]{2})?$'
-    match = re.findall(r'(\$\d+)((?:,)?[\d]{3})*\.([\d]{2})?', text)
-    print(match)
-    #cur = match[0]
-    #amount = match[1]
+    if not re.match(r'^\$(\d+)', text):
+        return None
+    else:
+        match = re.findall('(\$\d+)(,*\d{3})*(\.[\d]{2})?$', text)
+        print(match)
 
-money("$45,555,555.55")
+print(money('$12'))
+print(re.match(r'(,\d{2}\b)', '$12,34'))
+
 # helper
+
 def round(number):
     return math.round(float(number), 2)
-    
+
 def zipcode(text):
     if not re.search(r'-', text) and len(text) == 5:
         return {"zip":text, "plus4": None}
@@ -44,7 +46,7 @@ def zipcode(text):
                 return {"zip":zipp, "plus4":plus4}
     else:
         return None
-   
+
 def date(text):
     sep_l = r'(\d{1,2})/(\d{1,2})/(\d{2,4})'
     sep_d = r'(\d{2,4})\-(\d{2})\-(\d{2})'
@@ -64,12 +66,49 @@ def date(text):
             return date_format(month, day, year)
     else:
         return None
+
 ###DRY###
 def date_format(month, day, year):
     return {"month":int(month), "day":int(day), "year":int(year)}
 
 def hdate(date):
-    pass
+    monts = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec']
+    if re.search(r'/', date):
+        dt = date.split('/')
+        print(date+" separated by /")
+        if int(dt[0]) == 2:
+            if int(dt[2]) % 4 == 0  and int(dt[1]) > 29:
+                return None
+            elif int(dt[2]) % 4 != 0  and int(dt[1]) > 28:
+                return None
+            else:
+                return date_format(int(dt[0]), int(dt[1]),int(dt[2]))
+        else:
+             if int(dt[0]) in [4,6,9,11] and int(dt[1]) > 30:
+                 return None;
+             elif int(dt[0]) in [1,3,5,7,8,10,12] and int(dt[1]) > 31:
+
+                 return None
+             else:
+                 return date_format(int(dt[0]), int(dt[1]), int([dt2]))
+    else:
+        if re.match(r'^\d+', date):
+            match = date.split(' ')
+            year = int(match[0])
+            day = int(match[2])
+            month = match[1][0:3].lower()
+            month = monts.index(month[0:3])+1
+            return date_format(month, day, year)
+        elif re.match(r'^[a-zA-Z]', date):
+            match = re.sub(r'([\.,])', '', date)
+            match = match.split(' ')
+            year = int(match[2])
+            day = int(match[1])
+            month = match[0]
+            month = month[0:3].lower()
+            month = monts.index(month[0:3])+1
+            return date_format(month, day, year)
+
 
 def email(text):
     match = re.findall(r'\b([a-zA-Z_]+[\d{0,}\.?\-?]*[a-zA-Z]*)@([a-zA-Z]*\.\w{2,3})\b', text)
@@ -89,7 +128,7 @@ def address(text):
         city1 = r'(?:\n?|,?)\s*(\w+\s*)(\w+\s*)(?:, \b[A-Z]{2}\b)'
         city2 = r'(?:\n?|,?)\s*(\w+\s*\w+\s*)(?:, \b[A-Z]{2}\b)'
         city = r'(?:\n+|,+){1}\s*([\w+\.?_?\d?\-?\s*]+)(?:, \b[A-Z]{2}\b)'
-        
+
         city = re.search(city, text).groups()
         addresse = re.search(addresse, text).groups()
         state = re.search(state, text).groups()
@@ -98,11 +137,3 @@ def address(text):
  #       print(code)
         return {"address":addresse[0], "city":city[0], "state":state[0], "zip":code['zip'], "plus4":code['plus4']}
         #return re.search(zcode,text)
-
-txt = ("""368 Agness Harbor
-     Port Mariah_scholes123, MS 63293""")
-t = "8264 Schamberger Spring, matem.bwe njom-be Jordanside, MT 98833-0997"
-z="Lake Joellville, NH"
-#sth = address(t)
-#print(sth)
-
